@@ -28,33 +28,17 @@ import os
 
 @st.cache_data
 def load_data():
-    # Get absolute path of current file
     BASE_DIR = os.path.dirname(__file__)
-    file_path = os.path.join(BASE_DIR, "data", "uac_data.csv")
+    st.write("Base Directory:", BASE_DIR)
+
+    data_folder = os.path.join(BASE_DIR, "data")
+    st.write("Files inside data folder:", os.listdir(data_folder))
+
+    file_path = os.path.join(data_folder, "uac_data.csv")
+    st.write("Full file path:", file_path)
 
     df = pd.read_csv(file_path)
-
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df = df.sort_values("Date")
-    df.set_index("Date", inplace=True)
-
-    numeric_cols = [
-        "Children in HHS Care",
-        "Children transferred out of CBP custody",
-        "Children discharged from HHS Care"
-    ]
-
-    for col in numeric_cols:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .str.replace(",", "", regex=False)
-            .astype(float)
-        )
-
-    df = df.dropna()
     return df
-
 
 df = load_data()
 # ----------------------------------------------------------
@@ -620,3 +604,4 @@ elif page == "⚠️ Early Warning Panel":
     st.write("Recent Growth Rate:",
 
              round(growth * 100, 2), "%")
+
