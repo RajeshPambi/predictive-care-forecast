@@ -74,20 +74,48 @@ page = st.sidebar.radio(
     "Go to",
     [
         "🏠 Home",
+        "📁 Data Analysis & EDA",
         "📊 Overview Dashboard",
         "📈 Trend & Seasonality",
         "🔮 ML Care Load Forecast",
+        "🏥 Discharge Prediction",
         "⚠️ Early Warning Panel"
     ]
 )
 
 # ==========================================================
-# HOME
+# HOME (EXECUTIVE PROFESSIONAL VERSION)
 # ==========================================================
 
 if page == "🏠 Home":
 
     st.title("Predictive Forecasting of Care Load & Placement Demand")
+    st.subheader("AI-Driven Decision Support for HHS Capacity Planning")
+
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # PROJECT OVERVIEW
+    # ------------------------------------------------------
+
+    st.markdown("### Project Overview")
+
+    st.write("""
+    This project transforms historical UAC operational data into forward-looking 
+    predictive intelligence. Using time-series analysis and machine learning, 
+    the system forecasts future care demand, discharge capacity, and potential 
+    system stress.
+    
+    The goal is to enable proactive planning rather than reactive crisis response.
+    """)
+
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # CURRENT SYSTEM SNAPSHOT
+    # ------------------------------------------------------
+
+    st.markdown("### Current System Snapshot")
 
     latest = df.iloc[-1]
 
@@ -99,7 +127,7 @@ if page == "🏠 Home":
     )
 
     col2.metric(
-        "Transfers",
+        "Transfers to HHS",
         f"{int(latest['Children transferred out of CBP custody']):,}"
     )
 
@@ -113,8 +141,124 @@ if page == "🏠 Home":
         - latest["Children discharged from HHS Care"]
     )
 
-    col4.metric("Net Daily Pressure", f"{int(net_pressure):,}")
+    col4.metric(
+        "Net Daily Pressure",
+        f"{int(net_pressure):,}"
+    )
 
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # WHAT THIS SYSTEM DELIVERS
+    # ------------------------------------------------------
+
+    st.markdown("### What This System Delivers")
+
+    st.write("""
+    • 7–30 day forecasts of children in HHS care  
+    • Discharge and transfer demand prediction  
+    • Early warning signals for capacity stress  
+    • Model comparison (Statistical vs Machine Learning)  
+    • Confidence interval visualization  
+    • Interactive executive dashboard  
+    """)
+
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # IMPACT STATEMENT
+    # ------------------------------------------------------
+
+    st.info("""
+    By shifting from descriptive reporting to predictive forecasting,
+    this system supports data-driven decisions that improve resource
+    allocation, reduce overcrowding risk, and strengthen child-welfare outcomes.
+    """)
+
+# ==========================================================
+# DATA ANALYSIS & AUTOMATED EDA
+# ==========================================================
+
+elif page == "📁 Data Analysis & EDA":
+
+    st.title("Dataset Preview, Summary Statistics & Automated EDA")
+
+    # ------------------------------------------------------
+    # DATASET PREVIEW
+    # ------------------------------------------------------
+
+    st.markdown("## 📊 Dataset Preview")
+
+    rows = st.slider("Select number of rows to preview", 5, 50, 10)
+    st.dataframe(df.head(rows))
+
+    st.markdown(f"**Shape:** {df.shape[0]} rows × {df.shape[1]} columns")
+
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # SUMMARY STATISTICS
+    # ------------------------------------------------------
+
+    st.markdown("## 📈 Summary Statistics")
+
+    st.dataframe(df.describe())
+
+    st.markdown("### Missing Values")
+
+    missing = df.isnull().sum()
+    st.dataframe(missing)
+
+    st.markdown("### Date Range")
+
+    st.write(f"Start Date: {df.index.min().date()}")
+    st.write(f"End Date: {df.index.max().date()}")
+
+    st.markdown("---")
+
+    # ------------------------------------------------------
+    # AUTOMATED EDA VISUALS
+    # ------------------------------------------------------
+
+    st.markdown("## 🤖 Automated Exploratory Data Analysis")
+
+    # Correlation Heatmap
+    st.markdown("### Correlation Heatmap")
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    corr = df.corr()
+
+    im = ax.imshow(corr)
+    ax.set_xticks(range(len(corr.columns)))
+    ax.set_yticks(range(len(corr.columns)))
+    ax.set_xticklabels(corr.columns, rotation=90)
+    ax.set_yticklabels(corr.columns)
+
+    fig.colorbar(im)
+    st.pyplot(fig)
+
+    # Distribution Plots
+    st.markdown("### Distribution Analysis")
+
+    column_choice = st.selectbox(
+        "Select column for distribution analysis",
+        df.columns
+    )
+
+    fig2, ax2 = plt.subplots()
+    df[column_choice].hist(bins=30, ax=ax2)
+    ax2.set_title(f"Distribution of {column_choice}")
+    st.pyplot(fig2)
+
+    # Rolling Trend Visualization
+    st.markdown("### 7-Day Rolling Trend")
+
+    fig3, ax3 = plt.subplots()
+    rolling = df[column_choice].rolling(7).mean()
+    ax3.plot(df[column_choice], alpha=0.4, label="Original")
+    ax3.plot(rolling, linewidth=2, label="7-Day Rolling Mean")
+    ax3.legend()
+    st.pyplot(fig3)
 # ==========================================================
 # OVERVIEW DASHBOARD
 # ==========================================================
@@ -249,3 +393,4 @@ elif page == "⚠️ Early Warning Panel":
         st.success("🟢 LOW RISK")
 
     st.write("Recent Growth Rate:", round(growth * 100, 2), "%")
+
