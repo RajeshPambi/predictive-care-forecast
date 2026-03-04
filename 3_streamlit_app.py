@@ -24,9 +24,15 @@ st.set_page_config(
 # LOAD DATA
 # ----------------------------------------------------------
 
+import os
+
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/uac_data.csv")
+    # Get absolute path of current file
+    BASE_DIR = os.path.dirname(__file__)
+    file_path = os.path.join(BASE_DIR, "data", "uac_data.csv")
+
+    df = pd.read_csv(file_path)
 
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df = df.sort_values("Date")
@@ -51,7 +57,6 @@ def load_data():
 
 
 df = load_data()
-
 # ----------------------------------------------------------
 # SIDEBAR NAVIGATION
 # ----------------------------------------------------------
@@ -613,4 +618,5 @@ elif page == "⚠️ Early Warning Panel":
         st.success("🟢 LOW RISK")
 
     st.write("Recent Growth Rate:",
+
              round(growth * 100, 2), "%")
